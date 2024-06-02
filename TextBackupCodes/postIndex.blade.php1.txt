@@ -1,0 +1,15 @@
+<div class="container">
+    <h1>Posts</h1>
+    <a href="{{route('post.create')}}">Add New Post</a>
+    @foreach($posts as $post)
+    <div class="card mb-3">
+        <div class="card-body">
+            <p class="card-text">{{ $post->body }}</p>
+            <p class="card-text"><small class="text-muted">By {{ $post->user->name }}</small></p>
+            <img src="{{asset('storage/'. Auth::user()->image)}}" width="130" height="130" style="border-radius: 50%" alt="Profile Picture">
+            <p class="card-text">{{ $post->created_at }}</p>
+            <a href="{{route('post.edit',Auth::user()->id)}}"class="btn btn-warning">Edit Post</a>
+        </div>
+    </div>
+    @endforeach
+</div>
