@@ -7,7 +7,7 @@
     </x-slot>
     {{-- ----------------------- --}}
 
-    <a href="{{route('profile')}}" class="btn btn-warning" role="button">Profile Page</a>
+   <div id="p1"> <a href="{{route('profile')}}" id='p1' class="btn btn-warning" role="button">Profile Page</a></div>
 
     {{-- ----------------------- --}}
     <div class="py-12">
@@ -19,4 +19,7 @@
     </div>
 </x-app-layout>
 <style>
+    #p1{
+        text-align: center;
+    }
 </style>
