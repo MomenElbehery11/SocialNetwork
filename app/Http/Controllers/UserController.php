@@ -6,7 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     public function showProfile()
@@ -168,5 +169,58 @@ public function createUserAndAssignTeam(Request $request)
 
     return redirect()->route('dashboard');
 }
+public function loginUser(Request $request)
+{
+    try {
+        $validateUser = Validator::make($request->all(), [
+            'email'    => 'required|email',
+            'password' => 'required'
+        ]);
 
+        if ($validateUser->fails()) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Validation error',
+                'errors'  => $validateUser->errors()
+            ], 422);
+        }
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'status'  => false,
+                'message' => 'Invalid credentials',
+            ], 401);
+        }
+
+        // حذف التوكنات القديمة (اختياري)
+        $user->tokens()->delete();
+
+        // إنشاء توكن جديد
+        $token = $user->createToken('API TOKEN')->plainTextToken;
+
+        return response()->json([
+            'status'  => true,
+            'message' => 'User logged in successfully',
+            'token'   => $token,
+            'user'    => $user
+        ], 200);
+
+    } catch (\Throwable $th) {
+        return response()->json([
+            'status'  => false,
+            'message' => $th->getMessage()
+        ], 500);
+    }
+}
+    public function logout(Request $request)
+{
+    Auth::guard('web')->logout();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect('/login');
+}
 }

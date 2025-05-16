@@ -4,7 +4,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FriendRequestController;
-
+use App\Http\Controllers\Auth\LogoutController;
 Route::get('/', function () {
     return view('welcome');
 });
@@ -18,7 +18,10 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 });
-
+//logout
+Route::middleware('auth')->group(function () {
+    Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+});
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),

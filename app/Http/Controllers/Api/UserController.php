@@ -80,6 +80,21 @@ class UserController extends Controller
         'message' => 'Invalid credentials'
     ], 401);
 }
+//logout
+    public function logout(Request $request)
+{
+    Auth::guard('web')->logout();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Logged out successfully',
+        'code' => 200
+    ], 200); // ده الـ HTTP status code نفسه
+}
+
 public function index()
 {
     $users = User::all();  // أو تقدر تضيف فلترة إذا كنت عايز
@@ -99,5 +114,14 @@ public function removeFriend($friendId)
 
     return response()->json(['message' => 'No such friend.'], 400);
 }
+ public function logoutUser(Request $request)
+    {
+        // حذف التوكن الحالي للمستخدم
+        $request->user()->currentAccessToken()->delete();
 
+        return response()->json([
+            'status' => true,
+            'message' => 'Logged out successfully'
+        ], 200);
+    }
 }

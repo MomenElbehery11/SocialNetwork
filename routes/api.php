@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\LikeController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\UserProfileController;
 use App\Http\Controllers\Api\FriendRequestController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -30,6 +31,8 @@ Route::post('/auth/register', [UserController::class, 'createUser']);
 // Body: { email, password }
 Route::post('/auth/login', [UserController::class, 'loginUser']);
 
+// Logout user
+Route::middleware('auth:sanctum')->post('/auth/logout', [UserController::class, 'logoutUser']);
 
 //for adding comments
 Route::post('/posts/{postId}/comments', [CommentController::class, 'store'])
