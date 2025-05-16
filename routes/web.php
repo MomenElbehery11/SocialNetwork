@@ -19,9 +19,18 @@ Route::middleware([
     })->name('dashboard');
 });
 //logout
-Route::middleware('auth')->group(function () {
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');
+
+    Route::get('/profile', function () {
+        return view('users.profile');
+    })->name('profile');
 });
+//end of logout
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
