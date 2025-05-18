@@ -101,7 +101,8 @@ class PostController extends Controller
     // Show posts with comments
     public function index()
     {
-        $posts = Post::with('comments.user')->get();
+        $posts = Post::with(['user', 'comments.user', 'likes'])->latest()->get();
+
         return view('posts.postIndex', compact('posts'));
     }
 

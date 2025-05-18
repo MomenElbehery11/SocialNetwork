@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
@@ -162,25 +162,28 @@ Route::middleware([
 });
 
 
-Route::delete('/posts/{id}', [PostController::class, 'destroy'])->name('post.destroy');
 
-Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('post.edit');
-Route::put('/posts/{post}', [PostController::class, 'update'])->name('post.update');
+Route::middleware(['auth'])->group(function () {
 
-// Likes
-Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('post.like');
-Route::delete('/posts/{post}/unlike', [PostController::class, 'unlike'])->name('post.unlike');
+    // Posts
+    Route::delete('/posts/{id}', [PostController::class, 'destroy'])->name('post.destroy');
+    Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('post.edit');
+    Route::put('/posts/{post}', [PostController::class, 'update'])->name('post.update');
 
+    //  Likes
+    Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('post.like');
+    Route::delete('/posts/{post}/unlike', [PostController::class, 'unlike'])->name('post.unlike');
 
-use App\Http\Controllers\CommentController;
+    //  Comments
+    Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
 
-Route::post('/comments/{post}', [CommentController::class, 'store'])->name('comments.store');
+    //  Liked Users
+    Route::get('/post/{post}/liked-users', [PostController::class, 'likedUsers'])->name('post.liked-users');
 
-Route::get('/post/{post}/liked-users', [PostController::class, 'likedUsers'])->name('post.liked-users');
+    //  User Search
+    Route::get('/users/search', [UserController::class, 'search'])->name('users.search');
 
-Route::get('/users/search', [UserController::class, 'search'])->name('users.search');
-
-
+});
 //Friends
 
 Route::middleware(['auth'])->group(function () {
