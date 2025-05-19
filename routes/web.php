@@ -161,7 +161,7 @@ Route::middleware([
     ->name('post.update');
 });
 
-
+//profile
 
 Route::middleware(['auth'])->group(function () {
 

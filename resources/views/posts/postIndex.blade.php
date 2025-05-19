@@ -1,78 +1,69 @@
-
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 <div class="container">
     <h1>Posts</h1>
     <a href="{{route('post.create')}}" class="btn btn-info">Add New Post</a>
-
     @foreach($posts as $post)
     <div class="card mb-3">
         <div class="card-body">
-            <p class="card-text">{{ $post->body }}</p>
-
+            <p class="card-text" style="background:green">{{ $post->body }}</p>
             @if($post->image)
-                <img src="{{ asset('storage/' . $post->image) }}" width="300" height="300" alt="Post Image" style="max-width: 300px;">
-            @endif
-
-            {{-- عرض اسم وصورة صاحب البوست الحقيقي --}}
-            <p class="card-text">By: {{ $post->user->name }}</p>
-            <img src="{{ asset('storage/' . $post->user->image) }}" width="130" height="130" style="border-radius: 50%" alt="User Profile Picture" >
-
+            <img src="{{ asset('storage/' . $post->image) }}" width="300" height="300" alt="Post Image" style="max-width: 300px;">
+        @endif
+            <p class="card-text">{{ Auth::user()->name }}</p>
             <p class="card-text">{{ $post->created_at }}</p>
 
+            {{-- <p class="card-text"><small class="text-muted">By {{ $post->user()->name }}</small></p> --}}
+            {{-- <a href="{{ route('profile.edit') }}" > --}}
+            <img src="{{asset('storage/'. Auth::user()->image)}}" width="130" height="130" style="border-radius: 50%" alt="Profile Picture" >
+            {{-- </a> --}}
             <!-- Edit Button -->
-            <a href="{{ route('post.edit', $post->id) }}" class="btn btn-warning">Edit</a>
-
-            <!-- Display the number of likes -->
-            <p>Likes: {{ $post->likes->count() }}</p>
-
-            <!-- Delete Button -->
+        <a href="{{ route('post.edit', $post->id) }}" class="btn btn-warning">Edit</a>
+        <!-- Display the number of likes -->
+        <p>Likes: {{ $post->likes->count() }}</p>
             <form action="{{ route('post.destroy', $post->id) }}" method="POST">
                 @csrf
                 @method('DELETE')
                 <button type="submit" style="background: red">Delete</button>
             </form>
-        </div>
+      </div>
     </div>
-
-    <!-- Like / Unlike Button -->
+    {{-- Like------------- --}}
     @if ($post->likes->contains('user_id', Auth()->id()))
-        <form action="{{ route('post.unlike', $post->id) }}" method="POST">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="unlike">Unlike</button>
-        </form>
-    @else
-        <form action="{{ route('post.like', $post->id) }}" method="POST">
-            @csrf
-            <button type="submit">Like</button>
-        </form>
-    @endif
-
-    <!-- Comments Section -->
-    <h4 style="color:rgb(204, 128, 65)">Comments:</h4>
-    @foreach ($post->comments as $comment)
-        <div class="mb-2 comment">
-            <strong>{{ $comment->user->name }}</strong>
-            <p>{{ $comment->commentBody }}</p>
-        </div>
-    @endforeach
-
-    <!-- Add Comment Form -->
+            <form action="{{ route('post.unlike', $post->id) }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <button type="submit">Unlike</button>
+            </form>
+        @else
+            <form action="{{ route('post.like', $post->id) }}" method="POST">
+                @csrf
+                <button type="submit">Like</button>
+            </form>
+        @endif
+{{-- view comments --}}
+<h4 style="color:rgb(204, 128, 65)">Comments:</h4>
+                    @foreach ($post->comments as $comment)
+                        <div class="mb-2">
+                            <strong>{{ $comment->user->name }}</strong>
+                            <p>{{ $comment->commentBody }}</p>
+                        </div>
+                    @endforeach
+    <!-- Comment Form -->
     <form action="{{ route('comments.store', $post->id) }}" method="POST">
         @csrf
         <textarea name="commentBody" rows="3" required></textarea>
         <button type="submit">Add Comment</button>
     </form>
+    {{-- end of comment form --}}
+    <!-- post.blade.php -->
+<form action="{{ route('post.liked-users', $post->id) }}" method="GET">
+    <button type="submit">View Users Who Liked</button>
+</form>
 
-    <!-- View Who Liked -->
-    <form action="{{ route('post.liked-users', $post->id) }}" method="GET">
-        <button type="submit" class="view-likes">View Users Who Liked</button>
-    </form>
-
+    {{-- view who liked --}}
     <a href="{{route('profile')}}" class="btn btn-warning" role="button">Profile Page</a>
-
     @endforeach
 </div>
-
 <style>
 /* Global Styles */
 body {
